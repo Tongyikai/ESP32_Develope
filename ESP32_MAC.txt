@@ -1,0 +1,91 @@
+/* *********#*********#*********#*********#*********#
+ESP 32 Mac Address
+#*********#*********#*********#*********#********* */
+A
+MAC: 14:33:5c:0f:37:0c
+
+B
+MAC: 14:33:5c:0d:dd:dc
+
+
+
+/* *********#*********#*********#*********#*********#
+發送端程式
+#*********#*********#*********#*********#********* */
+#include <esp_now.h>
+#include <WiFi.h>
+
+// 填入你的接收端 MAC 地址
+uint8_t receiverAddress[] = {0x24, 0x6F, 0x28, 0x1A, 0xBC, 0xDE}; 
+
+typedef struct struct_message {
+  char msg[32];
+} struct_message;
+
+struct_message myData;
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("ESP-NOW 初始化失敗！");
+    return;
+  }
+
+  // === 新版的 Peer 設定方式 ===
+  esp_now_peer_info_t peerInfo = {};
+  memcpy(peerInfo.peer_addr, receiverAddress, 6);
+  peerInfo.channel = 0;  
+  peerInfo.encrypt = false;
+
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+    Serial.println("加 Peer 失敗！");
+    return;
+  }
+}
+
+void loop() {
+  strcpy(myData.msg, "Hello ESP32!");
+  esp_now_send(receiverAddress, (uint8_t *)&myData, sizeof(myData));
+  Serial.println("訊息已發送！");
+  delay(2000);
+}
+
+
+
+/* *********#*********#*********#*********#*********#
+接收端程式
+#*********#*********#*********#*********#********* */
+#include <esp_now.h>
+#include <WiFi.h>
+
+typedef struct struct_message {
+  char msg[32];
+} struct_message;
+
+struct_message incomingData;
+
+// 修改 callback 函式：參數型態要改
+void onReceiveData(const esp_now_recv_info_t *info, const uint8_t *incomingDataBytes, int len) {
+  memcpy(&incomingData, incomingDataBytes, sizeof(incomingData));
+  Serial.print("收到訊息：");
+  Serial.println(incomingData.msg);
+}
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);  // STA模式
+
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("ESP-NOW 初始化失敗！");
+    return;
+  }
+
+  esp_now_register_recv_cb(onReceiveData);  // 註冊正確型態的 callback
+}
+
+void loop() {
+  // 無需在 loop 做任何事
+}
+
