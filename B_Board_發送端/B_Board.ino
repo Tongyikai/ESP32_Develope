@@ -72,7 +72,7 @@ void loop() {
   esp_now_send(receiverAddress, (uint8_t *)&myData, sizeof(myData));
   Serial.printf("第 %d 次訊息已發送：%s\n", sendCount, myData.msg);
 
-  delay(5000);
+  delay(60000);
 
   lcd.backlight();
   lcd.setCursor(0,0);
