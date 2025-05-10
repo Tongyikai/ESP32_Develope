@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html Lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>ENTRUST</title>
+        <!-- <link rel="stylesheet" href="public/stylesheets/lobby.css"> -->
+        <link rel="stylesheet" href="style.css">
+        <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+    </head>
+
+    <body>
+        <section>
+            <div class="container">
+                <header>
+                    <a href="https://www.google.com/" class="logo">ENTRUST</a>
+
+                    <div class="notify">
+                        <ul>
+                            <li class="graph_bell">
+                                <img class="mailElement" src="images/mail.png" id="mailElement">
+                                <img class="notifyBell" src="images/bellIcon2.png" alt="bell_img" id="notifyBell">
+                                <div class="msg">
+                                    <div class="msg_title">
+                                        <!-- <ul>
+                                            <li><i class="fas fa-map-marker-alt"></i></li>
+                                            <li><img src="images/i.png"></li>
+                                            <li><img src="images/BillyJoel.png"></li>
+                                            <li><img src="images/i.jpg"></li>
+                                            <li><img src="images/DonHenley.png"></li>
+                                        </ul> -->
+                                    </div>
+                                    <div class="msg_content">
+                                        <ul>
+                                            <li>
+                                                <img src="images/i.png">
+                                                1234567890123456789012345
+                                            </li>
+                                            <li>
+                                                <img src="images/BillyJoel.png">
+                                                TestTwo
+                                            </li>
+                                            <li>
+                                                <img src="images/IU.png">
+                                                TestThree
+                                            </li>
+                                            <li>
+                                                <img src="images/DonHenley.png">
+                                                TestFour
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="navbar">
+                        <ul>
+                            <li class="graph_o">
+                                <img class="menuAvatar" src="images/avatar.png" alt="profile_img" id="menuAvatar">
+                                <!-- <img src="images/avatar.png" alt="profile_img"> -->
+
+                                <div class="menu">
+                                    <!-- <div class="menu_left">
+                                        <ul>
+                                            <li><i class="fas fa-map-marker-alt"></i></li>
+                                            <li><i class="far fa-plus-square"></i></li>
+                                            <li><i class="far fa-star"></i></li>
+                                            <li><i class="fas fa-cog"></i></li>
+                                            <li><i class="fas fa-sign-out-alt"></i></li>
+                                        </ul>
+                                    </div> -->
+                                    <div class="menu_right">
+                                        <ul>
+                                            <li id="menu_edit">Edit</li>
+                                            <li id="menu_addFriend">+Friend</li>
+                                            <li id="menu_club">Club</li>
+                                            <li>Settings</li>
+                                            <li id="menu_logout">Logout</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </header>
+            </div>
+
+            <div class="container_left">
+                <aside>
+                    <div class="box">
+                        <h3>ALL FRIENDS</h3>
+                        <!-- <h3>動態新增好友清單</h3> -->
+
+                        <div class="list" onclick="inviteMember( this )">
+                            <div class="imgBx">
+                                <img src="images/BillyJoel.png">
+                            </div>
+                            <div class="content">
+                                <h2 class="rank"><small>#</small>1098</h2>
+                                <h4>Billy Joel</h4>
+                                <p>????</p>
+                            </div>
+                        </div>
+
+                        <div class="list" onclick="inviteMember( this )">
+                            <div class="imgBx">
+                                <img src="images/DonHenley.png">
+                            </div>
+                            <div class="content">
+                                <h2 class="rank"><small>#</small>1099</h2>
+                                <h4>Don Henley</h4>
+                                <p>????</p>
+                            </div>
+                        </div>
+
+                        <div class="list" onclick="inviteMember( this )">
+                            <div class="imgBx">
+                                <img src="images/ElonMusk.png">
+                            </div>
+                            <div class="content">
+                                <h2 class="rank"><small>#</small>1100</h2>
+                                <h4>Elon Musk</h4>
+                                <p>Source of Wealth: Tesla, SpaceX</p>
+                            </div>
+                        </div>
+
+
+                        <div class="list" onclick="inviteMember( this )">
+                            <div class="imgBx">
+                                <img src="images/JackMa.png">
+                            </div>
+                            <div class="content">
+                                <h2 class="rank"><small>#</small>1101</h2>
+                                <h4>Jack Ma</h4>
+                                <p>Source of Wealth: Alibaba Group</p>
+                            </div>
+                        </div>
+
+                        <div class="list" onclick="inviteMember( this )">
+                            <div class="imgBx">
+                                <img src="images/MarkZuckerberg.png">
+                            </div>
+                            <div class="content">
+                                <h2 class="rank"><small>#</small>1102</h2>
+                                <h4>Mark Zuckerberg</h4>
+                                <p>Source of Wealth: Facebook</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </aside>
+            </div>
+
+            <div class="container_middle">
+                <main>
+                    <div class="box">
+                        <h3>LEADERBOARD</h3>
+                    </div>
+                </main>
+            </div>
+
+            <div class="container_club" style="display: none;">
+                <main>
+                    <div class="box">
+                        <form id="create_circleForm">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Circle Name: </span>
+                                                <input type="text" id="circle_name" name="circle_name" placeholder="Fraternity">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Created On: </span>
+                                                <input type="text" id="created_on" placeholder="" disabled="disabled">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Dues</span>
+                                                <input type="text" id="circle_dues" name="circle_dues" placeholder="$10,000" onblur="this.value = '$' + convertNumberIntoThousands( this.value )">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Amount: </span>
+                                                <input type="text" id="circle_amount" placeholder="$0" disabled="disabled">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Payment Cycle(Week)</span>
+                                                <input type="text" id="circle_paymentCycle" name="circle_paymentCycle" placeholder="2">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer stacked">
+                                                <span>Bulletin Board: </span>
+                                                <textarea name="circle_textarea" oninput="this.parentNode.dataset.value = this.value" rows="1" placeholder="Ideas" maxlength="150"></textarea>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <input type="hidden" id="circle_token" name="token">
+                                            <input type="hidden" id="circle_inviteMember" name="inviteMember">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="buddyCircle">
+                                            <h3>CLICK FRIENDS LIST INVITE TO BECOME A MEMBER</h3>
+
+                                            <div for="text1" class="buddyLabel" id="1098" name="circle_member" onclick="removeLabel( this )">
+                                                <img class="buddyLabelAvatar" src="images/BillyJoel.png">
+                                                <a>Billy Joel</a>
+                                            </div>
+                                            <div class="buddyLabel" id="1102" name="circle_member" onclick="removeLabel( this )">
+                                                <img class="buddyLabelAvatar" src="images/MarkZuckerberg.png">
+                                                <a>Mark Zuckerberg</a>
+                                            </div>
+
+                                            <!-- <div class="buddyLabel" onclick="removeLabel( this )">
+                                                <img class="buddyLabelAvatar" src="images/BillyJoel.png">
+                                                <a>Timothée Chalamet</a>
+                                            </div>
+                                            <div class="buddyLabel" onclick="removeLabel( this )">
+                                                <img class="buddyLabelAvatar" src="images/BillyJoel.png">
+                                                <a>Stephen McKinley Henderson</a>
+                                            </div>
+                                            <div class="buddyLabel" onclick="removeLabel( this )">
+                                                <img class="buddyLabelAvatar" src="images/BillyJoel.png">
+                                                <a>Ji-eun Lee(IU)</a>
+                                            </div>
+                                            <div class="buddyLabel" onclick="removeLabel( this )">
+                                                <img class="buddyLabelAvatar" src="images/BillyJoel.png">
+                                                <a>ABCDEFGHIJKLMNOPQRSTUVWXYZ</a>
+                                            </div> -->
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="circle_footer">
+                                <input class="circle_confirm_button" style="font-size: 1em;" type="submit" value="Submit">
+                            </div>
+                            <div class="closeButton" id="club_closeButton">
+                                <span class="closeBtn">&times;</span>
+                            </div>
+                        </form>
+                    </div>
+                </main>
+            </div>
+
+            <div class="editWindow" style="display: none;">
+                <main>
+                    <div class="box">
+                        <form id="edit_profileForm">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Image: </span>
+                                                <input type="file" id="edit_uploadAvatar" name="avatar" accept="image/png, image/jpeg" onchange="loadFile(event)" placeholder="Upload Avatar">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <button type="button" onclick="cancelUploadAvatar()" style="width: 20px;">x</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Family Name: </span>
+                                                <input  type="text" id="edit_familyName" name="familyName" placeholder="Family Name">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Given Name: </span>
+                                                <input type="text" id="edit_givenName" name="givenName" placeholder="Given Name">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Nickname: </span>
+                                                <input type="text" id="edit_nickname" name="nickname" placeholder="Nickname">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Date Of Birth: </span>
+                                                <select id="edit_yearBox" class="year" name="yearOfBirth"><option value="year">Year</option></select>
+                                                <select id="edit_monthBox" class="month" name="monthOfBirth"><option value="month">Month</option></select>
+                                                <select id="edit_dayBox" class="day" name="dayOfBirth"><option value="day">Day</option></select>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Gender: </span>
+                                                <select id="edit_gender" class="gender" name="gender">
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                </select>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Job Title: </span>
+                                                <input type="text" id="edit_jobTitle" name="jobTitle" placeholder="Beekeeper">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Stay at: </span>
+                                                <input type="text" id="edit_currentCity" name="currentCity" placeholder="Hollywood">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Hometown: </span>
+                                                <input type="text" id="edit_hometown" name="hometown" placeholder="Florida">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Mobile: </span>
+                                                <input type="text" id="edit_mobileNumber" name="mobileNumber" placeholder="954-920-3500" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class="input-sizer">
+                                                <span>Facebook: </span>
+                                                <input type="text" id="edit_facebook" name="facebook">
+                                            </label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="edit_footer">
+                                <input class="edit_update_button" style="font-size: 1em;" type="submit" value="Submit">&nbsp<input style="font-size: 1em;" type="reset" value="Reset">
+                            </div>
+                            <div class="closeButton" id="edit_closeButton">
+                                <span class="closeBtn">&times;</span>
+                            </div>
+                        </form>
+                    </div>
+                </main>
+            </div>
+
+            <div class="addNewFriendWindow">
+                <ul>
+                    <li>
+                        <form action="#">
+                            <label class="input-sizer">
+                                <span>Input: </span>
+                                <input id="addFriendName" type="text" onInput="this.parentNode.dataset.value = this.value" size="4" placeholder="Username Or Email">
+                            </label>
+                            <input type="button" value="Invite Friend" onclick="newFriend();">
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="container_middle_footer">
+                <!-- <h3>Copyright @ 2023 Financial Technology Company. All Right Reserved.</h3>
+                <h3>&copy; 2024 HowY'allDoing.com</h3> -->
+            </div>
+        </section>
+
+        <section>
+            <footer>
+                <h3>Copyright @ 2023 Financial Technology Company. All Right Reserved.</h3>
+                <h3>&copy; 2024 HowY'allDoing.com</h3>
+                <p>A B C D</p>
+                <p>E F G H</p>
+                <p>I J K L M N</p>
+                <p>O P Q R S T </p>
+                <p>U V W X Y Z</p>
+                <p>--------------------------</p>
+                <p>a b c d</p>
+                <p>e f g h </p>
+                <p>i j k l m n</p>
+                <p>o p q r s t</p>
+                <p>u v w x y z</p>
+            </footer>
+            <h2>what's up</h2>
+        </section>
+    </body>
+
+    <script type="text/javascript" src="public/scripts/clientAJAX.js"></script>
+    <script type="text/javascript" src="public/scripts/formCheck.js"></script>
+    <script type="text/javascript" src="public/scripts/lobbyCounter.js"></script>
+</html>
