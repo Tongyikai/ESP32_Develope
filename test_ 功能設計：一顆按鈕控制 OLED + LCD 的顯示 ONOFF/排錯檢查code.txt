@@ -1,0 +1,18 @@
+#include <Wire.h>
+
+void setup() {
+  Wire.begin();
+  Serial.begin(115200);
+  Serial.println("正在掃描 I2C 裝置...");
+
+  for (byte addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      Serial.print("找到 I2C 裝置在地址：0x");
+      Serial.println(addr, HEX);
+      delay(500);
+    }
+  }
+}
+
+void loop() {}
