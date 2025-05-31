@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ESP32 控制 LED</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h2>LED 控制面板</h2>
+  <img id="ledImage" src="/led_off.png" alt="LED 狀態" width="100">
+  <form action="/ledOn" method="GET">
+    <button type="submit">開燈 💡</button>
+  </form>
+  <form action="/ledOff" method="GET">
+    <button type="submit">關燈 📴</button>
+  </form>
+
+  <form action="/ledOn" method="GET">
+  	<label for="duration">開啟時間（秒）：</label>
+  	<input type="number" id="duration" name="duration" min="1" max="60" value="5">
+  	<button type="submit">開燈 💡</button>
+  </form>
+
+</body>
+</html>
