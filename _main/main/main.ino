@@ -2,8 +2,6 @@
 #include <Adafruit_SSD1306.h> // 特定硬體驅動庫，專門用於控制基於 SSD1306 控制器的 OLED 顯示器
 
 #include <LiquidCrystal_I2C.h> //控制基於 I2C 介面轉接板的 LCD 字符顯示器的庫
-// #include <hd44780.h>       // 新增 hd44780 核心函式庫
-// #include <hd44780_I2Cexp.h> // 新增 hd44780 的 I2C 擴展板支援
 
 #include <WiFi.h>
 #include <WebServer.h>
@@ -16,7 +14,6 @@ Adafruit_SSD1306 oled(128, 64, &Wire, -1); // OLED
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // LCD, 使用掃描到的地址 0x27
 // hd44780_I2Cexp lcd; // LCD，hd44780 會自動偵測 I2C 地址 <-- 新增這一行
 bool displayOn_Screen = false;
-//bool lastButtonState = HIGH;
 
 
 // 矩陣鍵盤
@@ -37,6 +34,15 @@ const char* password = "55779900";
 bool apModelOn = false;
 WebServer server(80);
 const int ledPin = 2;
+
+
+// 腳位定義（根據你實際接線）
+const int soilAnalogPin = 35;    // GPIO5 接類比輸出 A0
+// const int soilPin = 5;       // 土壤感測器 D0 腳位（數位訊號）
+const int relayPin = 26;      // 控制繼電器的腳位
+
+// 閾值設定（根據實測值調整）
+const int dryThreshold = 2000;  // 小於此值視為乾燥
 
 
 // 檔案上傳
@@ -83,9 +89,8 @@ void oButton() {
 
   delay(300);
   Serial.println("螢幕開啟或關閉");
-
-//  lastButtonState = buttonState;
 }
+
 void xButton() {
     apModelOn = !apModelOn;
 
@@ -147,12 +152,39 @@ void xButton() {
   }
 }
 
+void yButton() {
+  // LCD 顯示土壤參數+ 背光開啟
+  int soilValue = analogRead(soilAnalogPin);
+  lcd.backlight();          // ✅ 開背光
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("analogRead");
+  lcd.setCursor(0,1);
+  lcd.print(String(" ") + soilValue + " < " + dryThreshold);
 
+  digitalWrite(relayPin, LOW); // 啟動馬達（視你的模組邏輯，如需反向改為 LOW）
+  delay(10000);                  // 澆水 5 秒
+  digitalWrite(relayPin, HIGH);  // 關閉馬達
+  Serial.println("Done.");
+}
+
+void hButton() {
+
+}
+
+
+/* ******************************** setup ******************************** */
 void setup() {
   Serial.begin(115200);
   delay(2000); // 等待啟動穩定
   Serial.println("********** ESP32 Ready **********");
   pinMode(ledPin, OUTPUT);
+
+  // 自動澆水系統soilAnalogPin
+  // pinMode(soilPin, INPUT);     // 感測器輸出為數位訊號
+  pinMode(soilAnalogPin, INPUT);  // 類比
+  pinMode(relayPin, OUTPUT);   // 繼電器為輸出腳
+  digitalWrite(relayPin, HIGH); // 預設不啟動馬達（LOW 為關閉）根據你繼電器模組的邏輯需要反過來（部分模組 LOW 為啟動）
 
 
   // OLED 初始化
@@ -161,6 +193,7 @@ void setup() {
   }
   oled.clearDisplay();
   oled.display();
+
 
   //LCD 初始化
   lcd.init();         // 必須有
@@ -171,26 +204,8 @@ void setup() {
   lcd.setCursor(0,1);
   lcd.print("#####");
 
-  // LCD 初始化
-  // hd44780 的 begin() 會自動偵測 I2C 地址和 LCD 尺寸
-  // if (lcd.begin(16, 2)) { // 16 列 2 行
-  //   Serial.println("LCD 初始化成功");
-  //   lcd.backlight(); // 開啟背光
-  //   lcd.clear();     // 清除顯示
-  // } else {
-  //   Serial.println("LCD 初始化失敗！請檢查接線和 I2C 地址。");
-  //   // 如果 LCD 初始化失敗，可以在這裡加入一些錯誤處理
-  // }
 
-  /*
   // 啟動AP, 名稱與密碼
-  WiFi.mode(WIFI_AP); // 明確設定為 AP 模式
-  WiFi.softAP(ssid, password, 6); // 嘗試明確指定頻道，例如頻道 6
-  delay(100); // 增加延遲
-  Serial.println("AP Started");
-  Serial.println(WiFi.softAPIP());
-  */
-
   WiFi.mode(WIFI_AP); // 明確設定為 AP 模式
   bool result = WiFi.softAP(ssid, password); // 啟動 AP
 
@@ -274,5 +289,58 @@ void loop() {
     if (key =='O') {
       oButton();
     }
+    if (key == 'Y') {
+      yButton();
+    }
+    if (key == 'H') {
+      hButton();
+    }
   }
+
+  
+  // 自動澆水系統
+  int soilValue = analogRead(soilAnalogPin);
+  Serial.print("Soil value: ");
+  Serial.println(soilValue);
+
+  if (dryThreshold <  soilValue) {
+    Serial.println("Soil is dry → watering...");
+
+    //LCD 顯示土壤參數+ 背光開啟
+    lcd.backlight();          // ✅ 開背光
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("analogRead");
+    lcd.setCursor(0,1);
+    lcd.print(String(" ") + dryThreshold + " < " +  soilValue);
+
+    digitalWrite(relayPin, LOW);   // 啟動水泵
+    delay(5000);                    // 澆水 5 秒
+    digitalWrite(relayPin, HIGH);    // 關閉水泵
+  } else {
+    Serial.println("Soil is wet → no action.");
+    digitalWrite(relayPin, HIGH);    // 保持關閉
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Soil is wet → no action.");
+  }
+  
+
+
+  /*
+  int soilState = digitalRead(soilPin);
+
+  Serial.print("Soil dry? ");
+  Serial.println(soilState == LOW ? "Yes" : "No");
+
+  if (soilState == LOW) {  // FC-28 感測器乾燥時輸出 LOW
+    Serial.println("Watering now...");
+    digitalWrite(relayPin, HIGH); // 啟動馬達（視你的模組邏輯，如需反向改為 LOW）
+    delay(5000);                  // 澆水 5 秒
+    digitalWrite(relayPin, LOW);  // 關閉馬達
+    Serial.println("Done.");
+  }
+  delay(2000); // 每 2 秒偵測一次
+  */
+
 }
