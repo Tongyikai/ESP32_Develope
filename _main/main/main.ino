@@ -1,20 +1,27 @@
 #include <Adafruit_GFX.h> // 通用圖形庫，提供了在各種顯示設備上繪製基本圖形元素
 #include <Adafruit_SSD1306.h> // 特定硬體驅動庫，專門用於控制基於 SSD1306 控制器的 OLED 顯示器
-
 #include <LiquidCrystal_I2C.h> //控制基於 I2C 介面轉接板的 LCD 字符顯示器的庫
-
 #include <WiFi.h>
 #include <WebServer.h>
 #include <LittleFS.h>
 #include <Keypad.h>
 
-
 // 螢幕控制 OLED, LCD
-Adafruit_SSD1306 oled(128, 64, &Wire, -1); // OLED
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -OLED_RESET); // OLED
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // LCD, 使用掃描到的地址 0x27
-// hd44780_I2Cexp lcd; // LCD，hd44780 會自動偵測 I2C 地址 <-- 新增這一行
 bool displayOn_Screen = false;
 
+// AP 模式
+const char* ssid = "ESP32-LED-AP";
+const char* password = "55779900";
+bool apModelOn = false;
+
+// Server
+WebServer server(80);
+const int ledPin = 2;
 
 // 矩陣鍵盤
 const byte ROWS = 2;
@@ -27,23 +34,11 @@ byte rowPins[ROWS] = {32, 33};
 byte colPins[COLS] = {27, 14}; // ⚠️ GPIO12 改成 GPIO13
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-
-// AP 模式
-const char* ssid = "ESP32-LED-AP";
-const char* password = "55779900";
-bool apModelOn = false;
-WebServer server(80);
-const int ledPin = 2;
-
-
-// 腳位定義（根據你實際接線）
+// 自動澆水
 const int soilAnalogPin = 35;    // GPIO5 接類比輸出 A0
-// const int soilPin = 5;       // 土壤感測器 D0 腳位（數位訊號）
 const int relayPin = 26;      // 控制繼電器的腳位
-
 // 閾值設定（根據實測值調整）
 const int dryThreshold = 2000;  // 小於此值視為乾燥
-
 
 // 檔案上傳
 void listFiles() {
@@ -56,9 +51,8 @@ void listFiles() {
   }
 }
 
-
 // 矩陣鍵盤
-void oButton() {
+void oButton() { // 螢幕開關
   displayOn_Screen = !displayOn_Screen;
 
   if (displayOn_Screen) {
@@ -91,7 +85,7 @@ void oButton() {
   Serial.println("螢幕開啟或關閉");
 }
 
-void xButton() {
+void xButton() { // AP 開關
     apModelOn = !apModelOn;
 
   if (apModelOn) {
@@ -103,19 +97,16 @@ void xButton() {
       Serial.println("✅ AP 啟動成功");
       Serial.print("IP Address: ");
       Serial.println(WiFi.softAPIP());
-
       
       oled.clearDisplay(); // OLED 顯示文字
       oled.setTextSize(1);
       oled.setTextColor(SSD1306_WHITE);
       oled.setCursor(0, 0);
       oled.println("IP: ");
-      // oled.print(batteryVoltage, 2);
       oled.setCursor(0, 16);
       oled.println("192.168.4.1");
       oled.display();
 
-      
       lcd.clear(); // LCD 顯示文字
       lcd.setCursor(0,0);
       lcd.print("AP Model: available");
@@ -130,7 +121,6 @@ void xButton() {
       lcd.print("### failed ###");
     }
     delay(1000); // 給系統多點時間來啟動 WiFi
-
   } else {
     WiFi.softAPdisconnect(true);  // 關閉 AP
     Serial.println("AP：關閉");
@@ -140,11 +130,9 @@ void xButton() {
     oled.setTextColor(SSD1306_WHITE);
     oled.setCursor(0, 0);
     oled.println("AP: ");
-    // oled.print(batteryVoltage, 2);
     oled.setCursor(0, 16);
     oled.println("disable");
     oled.display();
-
 
     lcd.clear(); // LCD 顯示文字
     lcd.setCursor(0,0);
@@ -152,7 +140,7 @@ void xButton() {
   }
 }
 
-void yButton() {
+void yButton() { // 手動澆水開關
   // LCD 顯示土壤參數+ 背光開啟
   int soilValue = analogRead(soilAnalogPin);
   lcd.backlight();          // ✅ 開背光
@@ -168,10 +156,9 @@ void yButton() {
   Serial.println("Done.");
 }
 
-void hButton() {
-
+void hButton() { // 顯示電池電量
+  Serial.println("H Button.");
 }
-
 
 /* ******************************** setup ******************************** */
 void setup() {
@@ -180,12 +167,18 @@ void setup() {
   Serial.println("********** ESP32 Ready **********");
   pinMode(ledPin, OUTPUT);
 
+  // 檔案讀取
+  if (!LittleFS.begin()) {
+    Serial.println("LittleFS 初始化失敗，但繼續執行");
+    // return; ← 拿掉這個
+  }
+  listFiles();
+
   // 自動澆水系統soilAnalogPin
   // pinMode(soilPin, INPUT);     // 感測器輸出為數位訊號
   pinMode(soilAnalogPin, INPUT);  // 類比
   pinMode(relayPin, OUTPUT);   // 繼電器為輸出腳
   digitalWrite(relayPin, HIGH); // 預設不啟動馬達（LOW 為關閉）根據你繼電器模組的邏輯需要反過來（部分模組 LOW 為啟動）
-
 
   // OLED 初始化
   if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
@@ -193,7 +186,6 @@ void setup() {
   }
   oled.clearDisplay();
   oled.display();
-
 
   //LCD 初始化
   lcd.init();         // 必須有
@@ -203,7 +195,6 @@ void setup() {
   lcd.print("bootstrap:#####");
   lcd.setCursor(0,1);
   lcd.print("#####");
-
 
   // 啟動AP, 名稱與密碼
   WiFi.mode(WIFI_AP); // 明確設定為 AP 模式
@@ -227,15 +218,6 @@ void setup() {
     Serial.println("❌ AP 啟動失敗");
   }
   delay(1000); // 給系統多點時間來啟動 WiFi
-
-
-  // 檔案讀取
-  if (!LittleFS.begin()) {
-    Serial.println("LittleFS 初始化失敗，但繼續執行");
-    // return; ← 拿掉這個
-  }
-  listFiles();
-
 
   // 網頁
   server.on("/", HTTP_GET, []() {
@@ -270,13 +252,11 @@ void setup() {
     digitalWrite(ledPin, LOW);
     server.send(200, "text/html", "<h3>LED Turn Off</h3><a href='/'>GO BACK</a>");
   });
-
   server.begin();
 }
 
-
 void loop() {
-  server.handleClient();
+  // server.handleClient();
   
   // 矩陣鍵盤
   char key = keypad.getKey();
@@ -296,7 +276,6 @@ void loop() {
       hButton();
     }
   }
-
   
   // 自動澆水系統
   int soilValue = analogRead(soilAnalogPin);
@@ -324,23 +303,5 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print("Soil is wet → no action.");
   }
-  
-
-
-  /*
-  int soilState = digitalRead(soilPin);
-
-  Serial.print("Soil dry? ");
-  Serial.println(soilState == LOW ? "Yes" : "No");
-
-  if (soilState == LOW) {  // FC-28 感測器乾燥時輸出 LOW
-    Serial.println("Watering now...");
-    digitalWrite(relayPin, HIGH); // 啟動馬達（視你的模組邏輯，如需反向改為 LOW）
-    delay(5000);                  // 澆水 5 秒
-    digitalWrite(relayPin, LOW);  // 關閉馬達
-    Serial.println("Done.");
-  }
-  delay(2000); // 每 2 秒偵測一次
-  */
 
 }
