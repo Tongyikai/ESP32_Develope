@@ -15,6 +15,7 @@ void setup() {
   pinMode(soilAnalogPin, INPUT);  // 類比
   pinMode(relayPin, OUTPUT);   // 繼電器為輸出腳
   digitalWrite(relayPin, HIGH); // 預設不啟動馬達（LOW 為關閉）根據你繼電器模組的邏輯需要反過來（部分模組 LOW 為啟動）
+  delay(2000);
 }
 
 void loop() {
